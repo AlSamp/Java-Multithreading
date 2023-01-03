@@ -46,11 +46,15 @@ public class AssignmentPart1
 
         int timerLength;
 
+
+
+
+
         ////////////////////////////////////////////////////////////////////////
         
         // READ FILE
         // =========
-        String filename = "C:/Users/Alix/IdeaProjects/AssignmentPart1/src/scenario1.txt";
+        String filename = "C:/Users/Alix/IdeaProjects/AssignmentPart1/src/scenario3.txt";
         Scanner inputStream = null;
         try
         {
@@ -366,10 +370,15 @@ public class AssignmentPart1
             // ****************************** INTERIM REPORT  *******************************
             System.out.println("\nInterim Report @ " + time + "s:");
 
-            int giftsInSacks = sacks[0].getCapcity();
+            int giftsInSacks = 0;
             // TODO - calculate number
 
 
+
+            for (int i = 0; i < numSacks; i++)
+            {
+                giftsInSacks += sacks[i].getCapacity(); // calculate number of gifts placed into all sacks
+            }
 
 
 
@@ -381,6 +390,13 @@ public class AssignmentPart1
             {
                 hoppersCapacity[i] = hoppers[i].getCapacity();
                 giftsInHoppers += hoppersCapacity[i];
+            }
+
+            for (int i = 0; i < numSacks; i++)
+            {
+                giftsInSacks = sacks[i].getCapacity(); // output number of sacks in each sack
+
+                System.out.println("Sack " + sacks[i].id + " contains " + giftsInSacks + " presents.");
             }
 
             System.out.println(giftsInHoppers + " presents remaining in hoppers;\n" + giftsInSacks + " presents sorted into sacks.\n");
@@ -407,7 +423,7 @@ public class AssignmentPart1
         System.out.println("Configuration: " + filename);
         System.out.println("Total Run Time" + (endTime - startTime) / 1000 + "s.");
         
-        int giftsDeposited = (hoppers[0].presentIdCounter);
+        int giftsDeposited = (hoppers[0].presentIdCounter); // static idCounter across all hoppers
         // TODO - calculate this number!
         
         for (int h = 0; h < numHoppers; h++)
@@ -416,18 +432,66 @@ public class AssignmentPart1
         }
         System.out.println();
 
-        int giftsOnMachine = hoppers[0].getCapacity();
-        int giftsInSacks = sacks[0].getCapcity();
+        int giftsOnMachine = 0;
+        int giftsInSacks = 0;
+        for (int i = 0; i < numHoppers; i++)
+        {
+            giftsOnMachine += hoppers[i].getCapacity(); // calculate number of gifts remaining on the hoppers
+        }
+
+        for (int i = 0; i < numSacks; i++)
+        {
+            giftsInSacks += sacks[i].getCapacity(); // calculate number of gifts placed into all sacks
+        }
+
         // TODO - calculate these numbers!
         
         System.out.print("\nOut of " + giftsDeposited + " gifts deposited, ");
         System.out.print(giftsOnMachine + " are still on the machine, and ");
         System.out.println(giftsInSacks + " made it into the sacks");
 
+        for (int i = 0; i < numSacks; i++)
+        {
+            giftsInSacks = sacks[i].getCapacity(); // output number of sacks in each sack
+
+            System.out.println("Sack " + sacks[i].id + " contains " + giftsInSacks + " presents.");
+        }
+
+
+        giftsInSacks = 0;
+        for (int i = 0; i < numSacks; i++)
+        {
+            giftsInSacks += sacks[i].getCapacity(); // calculate number of gifts placed into all sacks
+        }
+
+
         int missing = giftsDeposited - giftsInSacks - giftsOnMachine;
         System.out.println(missing + " gifts went missing.");
 
 
+
+
+        // TERMINATE THREADS
+
+        for (int i = 0; i < numHoppers; i++)
+        {
+            hoppers[i].terminate();
+        }
+        for (int i = 0; i < numHoppers; i++)
+        {
+            tables[i].terminate();
+        }
+
+        //for(int i = 0; i < (sacks[0].accumulation.length -1); i++)
+        //{
+        //    System.out.println("Sack slot " + i + " = " + sacks[0].accumulation[i].id );
+        //}
+
+        System.exit(0);
+
     }
 
+
+
 }
+

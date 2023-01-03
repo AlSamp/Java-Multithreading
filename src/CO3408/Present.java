@@ -25,7 +25,7 @@ public class Present
         return id;
     }
 
-    public String readDestination()
+    public String getDestination()
     {
         return ageGroup;
     }

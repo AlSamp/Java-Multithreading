@@ -11,10 +11,12 @@ public class Hopper extends Thread
     Conveyor belt;
     int speed;
 
+    boolean running;
     Present[] collection;
     
     public Hopper(int id, Conveyor con, int capacity, int speed)
     {
+        running = true;
         collection = new Present[capacity];
         this.id = id;
         belt = con;
@@ -28,11 +30,20 @@ public class Hopper extends Thread
         // Add present to collection
         p.id = presentIdCounter; // add id to present
 
-        System.out.println("Hopper " + id + " adding present '" + p.getId() + "' to collection");
-        System.out.println("Present " + p.getId() +  " age group = " + p.getAgeGroup());
+        System.out.println("Hopper " + id + " adding present '" + p.id + "' to collection");
+       // System.out.println("Present " + p.getId() +  " age group = " + p.getAgeGroup());
 
-        collection[presentIdCounter - 1] = p; // add present to collection
-            // increment present counter ready for next present
+        // TODO fill into collection individually
+
+        for(int i = 0; i < (collection.length); i++)
+        {
+            if(collection[i] == null)
+            {
+                collection[i] = p;
+                break;
+            }
+        }
+
     }
 
     public int getCapacity()
@@ -54,11 +65,22 @@ public class Hopper extends Thread
             // TODO
             // if collection is not empty
 
-            while (getCapacity() != 0)
+
+          // while (getCapacity() != 0)
+        while(running == true)
              {
-                for (int i = 0; i < (collection.length); ++i) {
+                for (int i = 0; i < (collection.length); i++) {
+
+                    // loop to output hopper collection and visually see them being taken out each loop
+                    //for(int j = 0; j < collection.length;j++)
+                    //{
+                    //    System.out.println("Hopper slot " + j + " = " + collection[j] );
+                    //}
+
+
+
                     try {
-                        System.out.println("i = " + i );
+                       //y System.out.println("i = " + i );
                         Thread.sleep(speed * 1000); // place present at set intervals
                         if (belt.isFull() == true)
                         {
@@ -68,11 +90,12 @@ public class Hopper extends Thread
                             --i; //** IMPORTANT ** - decrement i to ensure that the present is not skipped
 
 
-                        } else if(belt.isFull() == false) {
+                        } else if(belt.isFull() == false && collection[i] != null) {
                             System.out.println("Conveyor " + belt.id + " is available to add present");
                             belt.insertPresentOnToBelt(collection[i]); // add present to conveyor belt
                             collection[i] = null; // remove present from hopper
                         }
+
                     } catch (InterruptedException e) {
                         System.out.println("Hopper " + id + " interrupted");
                     }
@@ -80,6 +103,12 @@ public class Hopper extends Thread
                 }
             }
 
+    }
+
+    public void terminate()
+    {
+        System.out.println("Thread Termination called");
+        running = false;
     }
 
     

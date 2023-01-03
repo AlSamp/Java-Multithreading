@@ -6,6 +6,7 @@ package CO3408;
 public class Sack
 {
     int id;
+    String age;
     Present[] accumulation;
     
     public Sack(int id, int capacity)
@@ -13,12 +14,12 @@ public class Sack
         accumulation = new Present[capacity];
         this.id = id;
 
-        System.out.println("Sack Constructor called - sack " + id + " created");
+        System.out.println("Sack Constructor called - sack " + id + " created \n" + "age group = " + age );
     }
 
     //TODO - Add more methods
 
-    public int getCapcity()
+    public int getCapacity()
     {
         int capacity = 0;
         for(int i = 0; i < (accumulation.length - 1); i++)
