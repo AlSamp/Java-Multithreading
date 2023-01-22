@@ -8,10 +8,13 @@ public class Present
     String ageGroup;
     int id;
 
+    int insertId;
+
 
 
     public Present(String destination)
     {
+        insertId = 0;
         ageGroup = destination;
     }
 

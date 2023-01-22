@@ -62,22 +62,9 @@ public class Hopper extends Thread
 
     public void run()
     {
-            // TODO
-            // if collection is not empty
-
-
-          // while (getCapacity() != 0)
         while(running == true)
              {
                 for (int i = 0; i < (collection.length); i++) {
-
-                    // loop to output hopper collection and visually see them being taken out each loop
-                    //for(int j = 0; j < collection.length;j++)
-                    //{
-                    //    System.out.println("Hopper slot " + j + " = " + collection[j] );
-                    //}
-
-
 
                     try {
                        //y System.out.println("i = " + i );
@@ -85,15 +72,19 @@ public class Hopper extends Thread
                         if (belt.isFull() == true)
                         {
 
-                            System.out.println("Conveyor " + belt.id + " is full");
-
+                            //System.out.println("Conveyor " + belt.id + " is full");
+                            System.out.println("Belt " + belt.id + " full, going to attempt to add present after sleep");
                             --i; //** IMPORTANT ** - decrement i to ensure that the present is not skipped
 
 
-                        } else if(belt.isFull() == false && collection[i] != null) {
-                            System.out.println("Conveyor " + belt.id + " is available to add present");
+
+                        } else if(belt.isFull() == false && collection[i] != null)
+                        {
+                            // try aquire item mutex of conveyor belt
+                            System.out.println("Hopper " + id + " ready to add present to belt " + belt.id);
                             belt.insertPresentOnToBelt(collection[i]); // add present to conveyor belt
                             collection[i] = null; // remove present from hopper
+
                         }
 
                     } catch (InterruptedException e) {
@@ -107,7 +98,7 @@ public class Hopper extends Thread
 
     public void terminate()
     {
-        System.out.println("Thread Termination called");
+        System.out.println("Hopper " + id +" Thread terminated");
         running = false;
     }
 

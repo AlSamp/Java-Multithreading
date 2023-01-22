@@ -22,7 +22,7 @@ public class Sack
     public int getCapacity()
     {
         int capacity = 0;
-        for(int i = 0; i < (accumulation.length - 1); i++)
+        for(int i = 0; i < (accumulation.length ); i++)
         {
             if(accumulation[i] != null)
             {
