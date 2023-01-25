@@ -23,11 +23,14 @@ import java.util.Scanner;
 public class AssignmentPart1
 {
 
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args)
     {
+
+
         System.out.print("Start of program\n");
         // These variables will store the configuration
         // of the Present sorting machine
@@ -50,7 +53,7 @@ public class AssignmentPart1
         
         // READ FILE
         // =========
-        String filename = "C:/Users/Alix/IdeaProjects/C03408-Assignment-Part1-backup/out/production/AssignmentPart1/scenario3.txt";
+        String filename = "C:/Users/Alix/IdeaProjects/C03408-Assignment-Part1-backup/out/production/AssignmentPart1/scenario5.txt";
         Scanner inputStream = null;
         try
         {
@@ -416,7 +419,7 @@ public class AssignmentPart1
         System.out.println("Total Run Time" + (endTime - startTime) / 1000 + "s.");
 
         // Calculate number of presents in the hoppers
-        int giftsDeposited = (hoppers[0].presentIdCounter); // static idCounter across all hoppers
+        int totalGifts = (hoppers[0].presentIdCounter); // static idCounter across all hoppers
         
         for (int h = 0; h < numHoppers; h++)
         {
@@ -477,16 +480,18 @@ public class AssignmentPart1
 
         // Output number of presents in sacks
         giftsInSacks = 0;
+
+
         for (int i = 0; i < numSacks; i++)
         {
             giftsInSacks += sacks[i].getCapacity(); // calculate number of gifts placed into all sacks
         }
 
         // calculate number of missing presents
-        int missing = giftsDeposited - giftsInSacks - giftsInHoppers - giftsOnBelt - giftsInTurntables;
+        int missing = totalGifts - giftsInSacks - giftsInHoppers - giftsOnBelt - giftsInTurntables;
 
         // Output results
-        System.out.print("\nOut of " + giftsDeposited + " gifts to be deposited, ");
+        System.out.print("\nOut of " + totalGifts + " gifts to be deposited, ");
         System.out.print(giftsInHoppers + " are still in the hoppers, and ");
         System.out.println(giftsInSacks + " made it into the sacks");
         System.out.println(giftsInTurntables + " presents inside the turntables.");
@@ -495,73 +500,125 @@ public class AssignmentPart1
 
 
 
-        // Display presents from all locations
-        //for (int i = 0; i < numHoppers; i++)
-        //{
-        //    System.out.println("Presents in hopper " + hoppers[i].id);
-        //    for(int j = 0; j < hoppers[i].collection.length;j++)
-        //    {
-        //        if(hoppers[i].collection[j] != null)
-        //        {
-        //            System.out.println("Present "+ hoppers[i].collection[j].id);
-//
-        //        }
-        //    }
-        //}
-//
-        //for (int i = 0; i < numBelts; i++)
-        //{
-        //    System.out.println("Presents on belt " + belts[i].id);
-        //    for(int j = 0; j < belts[i].presentsOnBelt.length;j++)
-        //    {
-        //        if(belts[i].presentsOnBelt[j] != null)
-        //        {
-        //            System.out.println("Present "+ belts[i].presentsOnBelt[j].id);
-//
-        //        }
-        //    }
-        //}
-//
-        //for (int i = 0; i < numTurntables; i++)
-        //{
-        //    System.out.println("Presents in turntable " + tables[i].id);
-        //    for(int j = 0; j < 1;j++)
-        //    {
-        //        if(tables[i].present != null)
-        //        {
-        //            System.out.println("Present "+ tables[i].present.id);
-//
-        //        }
-        //    }
-        //}
-//
-        //for (int i = 0; i < numSacks; i++)
-        //{
-        //    System.out.println("Presents in sack " + sacks[i].id);
-        //    for(int j = 0; j < sacks[i].accumulation.length;j++)
-        //    {
-        //        if(sacks[i].accumulation[j] != null)
-        //        {
-        //            System.out.println("Present "+ sacks[i].accumulation[j].id);
-//
-        //        }
-        //    }
-        //}
 
-        // TERMINATE THREADS
+
+        // TERMINATE HOPPER THREADS
+        int remainingGifts = giftsOnBelt + giftsInTurntables; // get total number of presents that made it onto the machine
+        int totalGiftsPossible = giftsInSacks + remainingGifts;
+
         for (int i = 0; i < numHoppers; i++)
         {
-            hoppers[i].terminate();
+           hoppers[i].terminate();
         }
-        for (int i = 0; i < numTurntables; i++)
+
+        System.out.println("***");
+        System.out.println(" ");
+        System.out.println(" ");
+        // Keep threads active after time limit until belts and turntables are empty
+        boolean stall = false;
+        while(giftsInSacks != totalGiftsPossible && stall == false) // TODO FIX THIS LOOP
         {
-            tables[i].terminate();
+            // find out if a turntable has stalled
+            for(int i = 0; i < numTurntables; i++)
+            {
+                if(tables[i].stall == true)
+                {
+                    stall = true;
+                }
+            }
+
+            // reset gifts in sacks ready for calculation
+            giftsInSacks = 0;
+            for (int i = 0; i < numSacks; i++)
+            {
+                giftsInSacks += sacks[i].getCapacity(); // calculate number of gifts placed into all sacks
+            }
+
         }
 
-        System.exit(0);
 
-    }
 
+
+
+
+        // Post Thread Termination Output
+        missing = totalGifts - giftsInSacks - giftsInHoppers;
+        System.out.println("\n\nAfter time stopped a total of " + totalGifts + " presents had been placed onto the hopper, ");
+        System.out.print(giftsInHoppers + " are still in the hoppers, and ");
+        System.out.println(giftsInSacks + " made it into the sacks");
+        System.out.println(missing + " gifts went missing.");
+
+
+        for (int k = 0; k < numTurntables; k++)
+        {
+            tables[k].terminate();
+
+
+        }
+
+
+            //// Display presents from all locations
+            //for (int i = 0; i < numHoppers; i++)
+            //{
+            //    System.out.println("Presents in hopper " + hoppers[i].id);
+            //    for(int j = 0; j < hoppers[i].collection.length;j++)
+            //    {
+            //        if(hoppers[i].collection[j] != null)
+            //        {
+            //            System.out.println("Present "+ hoppers[i].collection[j].id);
+//
+            //        }
+            //    }
+            //}
+//
+            //for (int i = 0; i < numBelts; i++)
+            //{
+            //    System.out.println("Presents on belt " + belts[i].id);
+            //    for(int j = 0; j < belts[i].presentsOnBelt.length;j++)
+            //    {
+            //        if(belts[i].presentsOnBelt[j] != null)
+            //        {
+            //            System.out.println("Present "+ belts[i].presentsOnBelt[j].id);
+//
+            //        }
+            //    }
+            //}
+//
+            //for (int i = 0; i < numTurntables; i++)
+            //{
+            //    System.out.println("Presents in turntable " + tables[i].id);
+            //    for(int j = 0; j < 1;j++)
+            //    {
+            //        if(tables[i].present != null)
+            //        {
+            //            System.out.println("Present "+ tables[i].present.id);
+//
+            //        }
+            //    }
+            //}
+//
+
+        // output sack totals
+            for (int i = 0; i < numSacks; i++)
+            {
+                //System.out.println("Presents in sack " + sacks[i].id);
+                for(int j = 0; j < sacks[i].accumulation.length;j++)
+                {
+                    if(sacks[i].accumulation[j] != null)
+                    {
+                        //System.out.println("Present "+ sacks[i].accumulation[j].id + "----" + sacks[i].accumulation[j].ageGroup);
+
+                    }
+
+                }
+                System.out.println("Total Presents in Sack "+ sacks[i].id + " - " + sacks[i].getCapacity()+ "/" + sacks[i].accumulation.length);
+            }
+            long newEndTime = System.currentTimeMillis();
+            long addedTime = newEndTime - endTime;
+            //long addedTime = (endTime - startTime - endTime) / 1000;
+            System.out.println("Additional time added " + addedTime / 1000  + "s.");
+            System.out.println("Machine Shut down after " + (newEndTime - startTime) / 1000 + "s.");
+        }
 
 
 }

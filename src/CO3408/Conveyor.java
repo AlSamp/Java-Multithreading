@@ -12,7 +12,7 @@ public class Conveyor
 
     private Semaphore mutex = new Semaphore(1);
     public Semaphore items;
-    private Semaphore spaces;
+    public Semaphore spaces;
     int id;
     public Present[] presentsOnBelt; // The requirements say this must be a fixed size array
     public  HashSet<Integer> destinations = new HashSet();
@@ -45,7 +45,11 @@ public class Conveyor
     public boolean isFull() // Returns true if the conveyor is full
     {
        // System.out.println(" Belt " +  id + " Capacity = " + capacity + "/" + presentsOnBelt.length);
-
+       // try
+       // {
+//
+       // }
+       // catch
         if (capacity == presentsOnBelt.length )
         {
             return true;
@@ -60,8 +64,8 @@ public class Conveyor
             System.out.println("Mutex Space insertPresentOnToBelt  || "  + spaces.availablePermits());
             try
             {
-                if (spaces.tryAcquire())
-                {
+                //if (spaces.tryAcquire())
+                //{
                     // grab the lock on the number of spaces available
                     //spaces.acquire();
                     // grab the lock on the mutex
@@ -70,8 +74,8 @@ public class Conveyor
                     //System.out.println("Mutex Space Available  || "  + spaces.availablePermits());
 
                     //if(capacity < presentsOnBelt.length)
-                    if(isFull() == false)
-                    {
+                    //if(isFull() == false)
+                   // {
                         System.out.println("Mutex Space Available  || "  + spaces.availablePermits());
                         //System.out.println("Belt " + id + " goes to grab Present " + presentFromHopper.getId() + " from Hopper " );
                         for(int i = (presentsOnBelt.length - 1); i >= 0; i--)
@@ -79,31 +83,16 @@ public class Conveyor
                             if( presentsOnBelt[i] == null) // search through presents on belt
                             {
                                 presentsOnBelt[i] = presentFromHopper; // add present to the end of conveyor belt array
-                                System.out.println("Present " + presentsOnBelt[i].id + " removed from hopper onto belt " + id);
+                                //System.out.println("Present " + presentsOnBelt[i].id + " removed from hopper onto belt " + id);
                                 capacity++;
+                                // release the lock on the number of available items
+                                items.release();
                                 break;
                             }
 
                         }
-
-                    }
-                    // release the lock on the number of available items
-                    items.release();
                     // release the lock on the mutex
                     mutex.release();
-
-                }
-                else
-                {
-
-                    System.out.println("Mutex Space Not Available  || "  + spaces.availablePermits());
-
-                   // System.out.println("Belt " + id + " sleeping. Unable to add present ______________________________________________________");
-                    //isFull();
-                   // Thread.sleep(1000);
-
-                }
-
             }
             catch (Exception ex)
             {

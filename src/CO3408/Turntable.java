@@ -125,7 +125,7 @@ public class Turntable extends Thread
                         //try
                         //{
                             //connections[inputBelt[i]].belt.extractPresentToSack(connections[2].sack);#
-                            if(stall == false)
+                            if(stall == false && present == null) // if there is a present in the turntable do not grab another present
                             {
                                 present = connections[inputBelt[i]].belt.extractPresent();
                             }
@@ -167,7 +167,7 @@ public class Turntable extends Thread
     {
 
             //try {
-                if (mutex.tryAcquire())
+                if (mutex.tryAcquire() && stall == false)
                 {
                     System.out.println("Turntable " + id + " sortPresent() starting with present " + present.id + " age group = " + present.ageGroup);
                     //mutex.acquire();
@@ -228,7 +228,7 @@ public class Turntable extends Thread
                                                                 connections[i].sack.accumulation[j] = present;
                                                                 present = null; // remove present from turntable memory
                                                                 System.out.println("Present placed into sack " + connections[i].sack.id + " : " + connections[i].sack.getCapacity() + "/" + connections[i].sack.accumulation.length);
-
+                                                                //connections[i].belt.items.release();
 
 
                                                                 break; // end loop once present has been placed
@@ -267,7 +267,8 @@ public class Turntable extends Thread
                                         //if(connections[i].sack.id == entry.getValue()) // if it is the correct sack
 
                                         // check if a present can be placed on the belt
-                                        if(connections[i].belt.isFull() == false)
+                                        //if(connections[i].belt.isFull() == false)
+                                        if(connections[i].belt.spaces.availablePermits() >= 0)
                                         {
                                             for (Integer element : connections[i].belt.destinations) {
 
@@ -339,7 +340,9 @@ public class Turntable extends Thread
                         mutex.release();
                     }
 
-                } else {
+                }
+                else
+                {
                     //System.out.println("Turntable " + id + " sleeping");
                     //System.out.println("---------------------------------------------------------- Mutex availability = " + mutex.availablePermits());
                     //Thread.sleep(1000);
@@ -355,5 +358,15 @@ public class Turntable extends Thread
     {
         System.out.println("Turntable " + id +" Thread terminated");
         running = false;
+        try
+        {
+            this.join();
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println(e);
+        }
+
+
     }
 }
